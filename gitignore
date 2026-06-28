@@ -1,0 +1,16 @@
+# Environment
+.env
+
+# База данных
+*.db
+
+# Файлы тулок
+files/
+
+# Go build
+*.exe
+*.out
+
+# IDE
+.vscode/
+.idea/
