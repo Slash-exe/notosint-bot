@@ -74,7 +74,7 @@ notosint-bot/
 ├── .gitignore
 └── files/
     ├── images/
-    │   ├── well_cum.jpg
+    │   ├── welcome.jpg
     │   ├── sherlock.png
     │   └── ...
     ├── sherlock-master.rar
