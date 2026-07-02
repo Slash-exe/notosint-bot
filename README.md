@@ -1,64 +1,59 @@
-# notOSINT Bot
+notOSINT Bot
 
 Telegram-бот для быстрого доступа к популярным OSINT-инструментам с системой баланса и оплатой через CryptoBot.
 
-## Функции
+Функции
 
-- 📦 Каталог OSINT-инструментов с описаниями и файлами
-- 💳 Пополнение баланса через [CryptoBot](https://t.me/CryptoBot) (USDT)
-- 🗄️ SQLite база данных пользователей
-- 🔒 Защита от двойного зачисления средств
-- ⚙️ Команда администратора для выдачи баланса
 
-## Инструменты в боте
+📦 Каталог OSINT-инструментов с описаниями и файлами
+💳 Пополнение баланса через CryptoBot (USDT)
+🗄️ PostgreSQL база данных пользователей
+🔒 Защита от двойного зачисления средств
+⚙️ Команда администратора для выдачи баланса
 
-| Инструмент | Описание |
-|---|---|
-| Sherlock | Поиск аккаунтов по нику на 300+ сайтах |
-| Blackbird | Поиск по нику и email |
-| GHunt | Анализ Google-аккаунта по Gmail |
-| Nexus | Мультитул: поиск, верификация номера, тестовая рассылка |
-| FSociety | Органайзер задач и генератор словарей |
-| GettingTool | Пробив, сканирование, генерация медиа |
-| theHarvester | OSINT и сетевое сканирование |
-| Arkada New | Лаунчер для пробива по номеру, нику, почте |
 
-## Стек
+Инструменты в боте
 
-- **Go** + [telebot v3](https://github.com/tucnak/telebot)
-- **SQLite** через [modernc.org/sqlite](https://gitlab.com/cznic/sqlite)
-- **CryptoBot API** через [resty](https://github.com/go-resty/resty)
+ИнструментОписаниеSherlockПоиск аккаунтов по нику на 300+ сайтахBlackbirdПоиск по нику и emailGHuntАнализ Google-аккаунта по GmailNexusМультитул: поиск, пробив номера, SMS BomberFSocietyХакерский органайзер и генератор словарейGettingToolПробив, сканирование, deepfaketheHarvesterOSINT и сетевое сканированиеArkada NewЛаунчер для пробива по номеру, нику, почте
 
-## Установка
+Стек
 
-### 1. Клонируй репозиторий
 
-```bash
-git clone https://github.com/твой-ник/notosint-bot
+Go + telebot v3
+PostgreSQL через lib/pq
+CryptoBot API через resty
+
+
+Установка
+
+1. Клонируй репозиторий
+
+bashgit clone https://github.com/твой-ник/notosint-bot
 cd notosint-bot
-```
 
-### 2. Создай `.env` файл
+2. Создай базу данных PostgreSQL
 
-```env
-BOT_TOKEN=токен_от_BotFather
+bashpsql -U postgres
+CREATE DATABASE notosint;
+\q
+
+3. Создай .env файл
+
+envBOT_TOKEN=токен_от_BotFather
 CRYPTO_TOKEN=токен_от_CryptoBot
 TELEGRAM_ID=твой_telegram_id
-```
+DATABASE_URL=postgres://postgres:пароль@localhost:5432/notosint
 
-### 3. Добавь файлы
+4. Добавь файлы
 
-Положи инструменты в папку `files/`, картинки в `files/images/`.
+Положи инструменты в папку files/, картинки в files/images/.
 
-### 4. Запусти
+5. Запусти
 
-```bash
-go run main.go
-```
+bashgo run main.go
 
-## Структура проекта
+Структура проекта
 
-```
 notosint-bot/
 ├── main.go
 ├── .env
@@ -70,16 +65,7 @@ notosint-bot/
     │   └── ...
     ├── sherlock-master.rar
     └── ...
-```
 
-## Команды
+Команды
 
-| Команда | Описание |
-|---|---|
-| `/start` | Главное меню |
-| `/topup 5` | Создать счёт на 5 USDT |
-| `/addbalance 10` | Выдать себе 10 USDT (только для админа) |
-
-## Лицензия
-
-MIT
+КомандаОписание/startГлавное меню/topup 5Создать счёт на 5 USDT/addbalance 10Выдать себе 10 USDT (только для админа)
