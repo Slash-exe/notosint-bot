@@ -11,8 +11,8 @@ import (
 
 	"github.com/go-resty/resty/v2"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	tele "gopkg.in/telebot.v3"
-	_ "modernc.org/sqlite"
 )
 
 const (
@@ -30,16 +30,16 @@ type Tool struct {
 func main() {
 	godotenv.Load()
 
-	db, err := sql.Open("sqlite", "bot.db")
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
 	db.Exec(`CREATE TABLE IF NOT EXISTS users (
-		id       INTEGER PRIMARY KEY,
+		id       BIGINT PRIMARY KEY,
 		username TEXT,
-		balance  REAL DEFAULT 0
+		balance  NUMERIC DEFAULT 0
 	)`)
 	db.Exec(`CREATE TABLE IF NOT EXISTS paid_invoices (
 		invoice_id TEXT PRIMARY KEY
@@ -62,12 +62,12 @@ func main() {
 	// --- Хелперы ---
 
 	getOrCreateUser := func(id int64, username string) {
-		db.Exec(`INSERT OR IGNORE INTO users (id, username, balance) VALUES (?, ?, 0)`, id, username)
+		db.Exec(`INSERT INTO users (id, username, balance) VALUES ($1, $2, 0) ON CONFLICT DO NOTHING`, id, username)
 	}
 
 	getBalance := func(id int64) float64 {
 		var balance float64
-		db.QueryRow(`SELECT balance FROM users WHERE id = ?`, id).Scan(&balance)
+		db.QueryRow(`SELECT balance FROM users WHERE id = $1`, id).Scan(&balance)
 		return balance
 	}
 
@@ -300,13 +300,13 @@ func main() {
 		amount, _ := strconv.ParseFloat(invoice["amount"].(string), 64)
 
 		var exists int
-		db.QueryRow(`SELECT COUNT(*) FROM paid_invoices WHERE invoice_id = ?`, invoiceID).Scan(&exists)
+		db.QueryRow(`SELECT COUNT(*) FROM paid_invoices WHERE invoice_id = $1`, invoiceID).Scan(&exists)
 		if exists > 0 {
 			return c.Respond(&tele.CallbackResponse{Text: "❌ Этот счёт уже был зачислен."})
 		}
 
-		db.Exec(`INSERT INTO paid_invoices (invoice_id) VALUES (?)`, invoiceID)
-		db.Exec(`UPDATE users SET balance = balance + ? WHERE id = ?`, amount, c.Sender().ID)
+		db.Exec(`INSERT INTO paid_invoices (invoice_id) VALUES ($1)`, invoiceID)
+		db.Exec(`UPDATE users SET balance = balance + $1 WHERE id = $2`, amount, c.Sender().ID)
 
 		return c.Respond(&tele.CallbackResponse{Text: fmt.Sprintf("✅ Баланс пополнен на %.2f USDT!", amount)})
 	})
@@ -323,7 +323,7 @@ func main() {
 			return c.Send("Использование: /addbalance 10")
 		}
 
-		db.Exec(`UPDATE users SET balance = balance + ? WHERE id = ?`, amount, c.Sender().ID)
+		db.Exec(`UPDATE users SET balance = balance + $1 WHERE id = $2`, amount, c.Sender().ID)
 		return c.Send(fmt.Sprintf("✅ Добавлено %.2f USDT", amount))
 	})
 

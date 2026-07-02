@@ -6,7 +6,7 @@ Telegram-бот для быстрого доступа к популярным O
 
 - 📦 Каталог OSINT-инструментов с описаниями и файлами
 - 💳 Пополнение баланса через [CryptoBot](https://t.me/CryptoBot) (USDT)
-- 🗄️ SQLite база данных пользователей
+- 🗄️ PostgreSQL база данных пользователей
 - 🔒 Защита от двойного зачисления средств
 - ⚙️ Команда администратора для выдачи баланса
 
@@ -26,7 +26,7 @@ Telegram-бот для быстрого доступа к популярным O
 ## Стек
 
 - **Go** + [telebot v3](https://github.com/tucnak/telebot)
-- **SQLite** через [modernc.org/sqlite](https://gitlab.com/cznic/sqlite)
+- **PostgreSQL** через [lib/pq](https://github.com/lib/pq)
 - **CryptoBot API** через [resty](https://github.com/go-resty/resty)
 
 ## Установка
@@ -38,19 +38,28 @@ git clone https://github.com/твой-ник/notosint-bot
 cd notosint-bot
 ```
 
-### 2. Создай `.env` файл
+### 2. Создай базу данных PostgreSQL
+
+```bash
+psql -U postgres
+CREATE DATABASE notosint;
+\q
+```
+
+### 3. Создай `.env` файл
 
 ```env
 BOT_TOKEN=токен_от_BotFather
 CRYPTO_TOKEN=токен_от_CryptoBot
 TELEGRAM_ID=твой_telegram_id
+DATABASE_URL=postgres://postgres:пароль@localhost:5432/notosint
 ```
 
-### 3. Добавь файлы
+### 4. Добавь файлы
 
 Положи инструменты в папку `files/`, картинки в `files/images/`.
 
-### 4. Запусти
+### 5. Запусти
 
 ```bash
 go run main.go
